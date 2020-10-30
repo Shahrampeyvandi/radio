@@ -312,6 +312,9 @@
             }
             $('.progress-bar').text('Complete');
             $('.progress-bar').css('width', '0%');
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
 
         },
 

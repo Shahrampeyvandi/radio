@@ -5,8 +5,6 @@
 <?php echo $__env->make('Includes.Panel.moviesmenu', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
 
-
-
 <div class="card">
     <div class="card-body">
         <div class="card-title">
@@ -17,8 +15,8 @@
         <table id="example1" class="table table-striped table-bordered w-100">
             <thead>
                 <tr>
-                    
-                  <th></th>
+
+                    <th></th>
                     <th>Title</th>
                     <th>Singer</th>
                     <th>Writer</th>
@@ -33,7 +31,7 @@
 
             <tbody>
                 <?php $__currentLoopData = $videos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key=>$post): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                
+
                 <tr>
                     <td><?php echo e($key+1); ?></td>
                     <td>
@@ -52,16 +50,21 @@
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </td>
                     <td class="text-success"><?php echo e($post->duration); ?></td>
-                    <td class="text-success"><?php echo e(count($post->categories) ? $post->categories->first()->name : '--'); ?></td>
-                    <td>
-                         <img src="<?php echo e($post->image('resize')); ?>" style="width: 70px" />
+                    <td class="text-success"><?php echo e(count($post->categories) ? $post->categories->first()->name : '--'); ?>
+
                     </td>
                     <td>
-                        <a href="<?php echo e(route('Panel.EditVideo',$post)); ?>" class="btn btn-sm btn-info"><i class="fa fa-edit"></i></a>
+                        <img src="<?php echo e($post->image('resize')); ?>" style="width: 70px" />
+                    </td>
+                    <td>
+                        <a href="<?php echo e(route('Panel.EditVideo',$post)); ?>" class="btn btn-sm btn-info"><i
+                                class="fa fa-edit"></i></a>
                         <a href="#" data-id="<?php echo e($post->id); ?>" title="حذف " data-toggle="modal" data-target="#deletePost"
                             class="btn btn-sm btn-danger   m-2">
                             <i class="fa fa-trash"></i>
                         </a>
+                        
+
                     </td>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </tbody>
@@ -80,9 +83,7 @@
 
 <?php $__env->startSection('js'); ?>
 <script>
- 
-    
-         $('#deletePost').on('shown.bs.modal', function (event) {
+    $('#deletePost').on('shown.bs.modal', function (event) {
             var button = $(event.relatedTarget)
             var recipient = button.data('id')
             $('#post_id').val(recipient)

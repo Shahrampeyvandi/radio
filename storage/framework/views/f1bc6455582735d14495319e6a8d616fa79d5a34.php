@@ -34,6 +34,10 @@
     </main>
     <!-- end::main content -->
 
+    <script>
+    mainUrl = '<?php echo e(route("MainUrl")); ?>'
+    </script>
+
     <!-- begin::global scripts -->
     <script src="<?php echo e(asset('assets/vendors/bundle.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/vendors/charts/chart.min.js')); ?>"></script>

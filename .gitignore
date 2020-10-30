@@ -5,6 +5,8 @@
 /public/music
 /public/playlist_images
 /public/video
+/public/mvideo
+/public/upload
 /public/videos
 /storage/*.key
 /vendor

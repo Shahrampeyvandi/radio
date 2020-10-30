@@ -13,6 +13,6 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'panel/upload-image','panel/upload-image2','ajax/getplaylists',
-        'myplaylist/edit-name'
+        'myplaylist/edit-name','panel/movie/add'
     ];
 }

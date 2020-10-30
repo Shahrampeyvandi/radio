@@ -39,28 +39,26 @@ class VideoController extends Controller
 
     public function Save(Request $request)
     {
+        // dd($request->all());
 
         $slug = SlugService::createSlug(Post::class, 'slug', $request->title);
         $destinationPath = "videos/$slug";
         if (!File::exists($destinationPath)) {
             File::makeDirectory($destinationPath, 0777, true);
         }
-        
+
         $post = new Post;
         $post->post_author = 1;
         $post->title = $request->title;
         $post->type = 'video';
-       
         $post->description = $request->translation;
         $Poster = $this->SavePoster($request->file('poster'), 'poster-', $destinationPath);
-        $poster186 =  $this->image_resize(186, 139, $Poster, $destinationPath);
-        $banner =    $this->image_resize(620,300, $Poster, $destinationPath);
-        File::delete(public_path() . '/' . $Poster);
-
+        $banner =    $this->image_resize(620, 300, $Poster, $destinationPath);
+        // File::delete(public_path() . '/' . $Poster);
         if ($request->released) {
             $post->released = Carbon::parse($request->released)->toDateTimeString();
         }
-        $post->poster = serialize(['resize' => $poster186, 'banner' => $banner]);
+        $post->poster = serialize(['resize' => $Poster, 'banner' => $banner]);
         $post->duration = $this->get_duration($request->file[1][1]);
         if ($post->save()) {
 
@@ -95,7 +93,7 @@ class VideoController extends Controller
             }
             $Poster = $this->SavePoster($request->file('poster'), 'poster-', $destinationPath);
             $poster161 =  $this->image_resize(300, 300, $Poster, $destinationPath);
-            $banner =    $this->image_resize(620,300, $Poster, $destinationPath);
+            $banner =    $this->image_resize(620, 300, $Poster, $destinationPath);
             File::delete(public_path() . '/' . $Poster);
             $post->poster = serialize(['resize' => $poster161, 'banner' => $banner]);
         } else {
@@ -108,7 +106,7 @@ class VideoController extends Controller
         $post->released = Carbon::parse($request->released)->toDateTimeString();
         $post->poster = $Poster;
 
-       
+
         $post->update();
 
 
@@ -135,5 +133,14 @@ class VideoController extends Controller
         $this->delete_with_ftp($file->url);
         $file->delete();
         return response()->json('success', 200);
+    }
+
+    public function cron($id)
+    {
+        // streaming 
+        $post = Post::find($id);
+        \App\Jobs\ProcessFileConvert::dispatch($post);
+         toastr()->success('streaming video successfuly');
+         return back();
     }
 }

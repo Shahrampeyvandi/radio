@@ -64,4 +64,9 @@ class Album extends Model
            return $singers->first()->fullname;
         }
     }
+
+     public static function getLatest($count = 8)
+    {
+       return  static::latest()->take($count)->get();
+    }
 }

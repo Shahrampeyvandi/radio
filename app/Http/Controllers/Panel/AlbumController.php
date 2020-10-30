@@ -34,9 +34,10 @@ class AlbumController extends Controller
 
         $slug = SlugService::createSlug(Album::class, 'slug', $request->name);
         if (request()->hasFile('poster')) {
-            $poster = $this->SavePoster($request->file('poster'), $slug, $this->destinationPath);
-            $resize = $this->image_resize(179, 179, $poster, $this->destinationPath);
-            File::delete(public_path() . '/' . $poster);
+            $resize = $this->SavePoster($request->file('poster'), $slug, $this->destinationPath);
+            // $resize = $this->image_resize(179, 179, $poster, $this->destinationPath);
+            // File::delete(public_path() . '/' . $poster);
+
         } else {
             $resize = '';
         }

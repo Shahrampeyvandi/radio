@@ -2,6 +2,7 @@
 
 Route::get('/admin/login', 'Panel\LoginController@Login')->name('Admin.Login');
 Route::post('/admin/login', 'Panel\LoginController@Verify')->name('Admin.Login');
+Route::get('/zip', 'Controller@zipArshive');
 
 // q]Ahy;dA~mmk
 Route::get('/login', 'Front\LoginController@Login')->name('login');
@@ -18,6 +19,7 @@ Route::group(['middleware' => ['admin'], 'prefix' => 'panel'], function () {
         return redirect()->route('Admin.Login');
     })->name('logout');
 
+    
     Route::get('music/add', 'Panel\MusicController@Add')->name('Panel.AddMusic');
     Route::post('music/add', 'Panel\MusicController@Save')->name('Panel.AddMusic');
     Route::put('music/add', 'Panel\MusicController@EditPost')->name('Panel.AddMusic');
@@ -30,6 +32,7 @@ Route::group(['middleware' => ['admin'], 'prefix' => 'panel'], function () {
     Route::get('rvideo/add', 'Panel\VideoController@Add')->name('Panel.AddVideo');
     Route::post('rvideo/add', 'Panel\VideoController@Save')->name('Panel.AddVideo');
 
+    Route::get('rvideo/stream/{id}', 'Panel\VideoController@cron')->name('Panel.Stream');
 
     Route::get('music/list', 'Panel\MusicController@MusicList')->name('Panel.MusicList');
     Route::get('video/list', 'Panel\VideoController@VideoList')->name('Panel.VideoList');

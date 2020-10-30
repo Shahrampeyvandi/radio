@@ -33,9 +33,9 @@ class PlayList extends Model
         return $this->belongsToMany(Post::class, 'post_playlist','play_list_id','post_id');
     }
 
-    public static function getLatest()
+    public static function getLatest($count = 8)
     {
-       return  static::latest()->take(8)->get();
+       return  static::latest()->take($count)->get();
     }
 
 }

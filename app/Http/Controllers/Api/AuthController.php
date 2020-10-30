@@ -80,6 +80,15 @@ class AuthController extends Controller
         }
     }
 
+    public function me()
+    {
+       if($user = JWTAuth::parseToken()->authenticate()){
+          
+        return '1';
+       }else{
+           return '0';
+       }
+    }
 
     public function login(Request $request)
     {

@@ -37,13 +37,9 @@ class MainController extends Controller
 
     public function all()
     {
-
-
-
-
+        
         $songs = Post::where('type', 'music')->orderBy('title', 'asc')->paginate(30);
         $resource = PostResource::collection($songs);
-
         return Response::json($resource, 200);
     }
 
@@ -148,18 +144,34 @@ class MainController extends Controller
 
     public function get_artist($id = null)
     {
+     
         if ($id) {
             $artist = Artist::find($id);
             if (!$artist)  return Response::json('artist not found', 404);
             if (Cache::has('get_artist-' . $artist->id)) {
-
+                
                 return Response::json(Cache::get('get_artist-' . $artist->id), 200);
             }
+            
             $top_songs = $artist->top_songs();
             $latest_songs = $artist->latest_songs();
             $latest_videos = $artist->latest_videos(5);
+            
+            $user = $this->get_user_from_token();
+            if ($user) {
+                $check_if_follow = $user->followings()->where('id', $artist->id)->first();
+                if ($check_if_follow) {
+                    $is_followed = true;
+                } else {
+                    $is_followed = false;
+                }
+            } else {
+                $is_followed = false;
+            }
             $data = [
+
                 'artist' => new ArtistResource($artist),
+                'is_followed' => $is_followed,
                 'top_songs' => PostResource::collection($top_songs),
                 'latest_songs' => PostResource::collection($latest_songs),
                 'latest_videos' => PostResource::collection($latest_videos),
@@ -205,6 +217,6 @@ class MainController extends Controller
             Cache::store()->put("$ip-$post->id", 'on', 60 * 5);
         }
 
-        return response()->json(new PostResource($post),200);
+        return response()->json(new PostResource($post), 200);
     }
 }

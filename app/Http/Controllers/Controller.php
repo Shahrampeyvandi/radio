@@ -6,11 +6,12 @@ use Image;
 use App\Tag;
 use App\User;
 use App\Album;
-use App\Lyric;
+use App\File as Video;
 use App\Artist;
 use App\Category;
 use App\PlayList;
 use App\Arrangement;
+use DirectoryIterator;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\File;
@@ -21,6 +22,9 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use ZipArchive;
 
 class Controller extends BaseController
 {
@@ -56,6 +60,25 @@ class Controller extends BaseController
         return $carbon;
     }
 
+    public function save_video($file, $post)
+    {
+     
+        if ($file) {
+            $f = new Video();
+            $f->status = Video::Status_New;
+            $f->url = '';
+            $f->type = 'video';
+            $f->fileble_id = $post->id;
+            $f->fileble_type = 'App\Post';
+            $f->converted_path = '';
+            $f->save();
+            $destinationPath = 'mvideo/' . $f->id . '/';
+            $f->url = $destinationPath . $file->getClientOriginalName();
+            $f->save();
+            $file->move($destinationPath, $file->getClientOriginalName());
+        }
+    }
+
     public function saveInformation(Request $request, $post, $destinationPath)
     {
         if (isset($request->singers)) {
@@ -66,34 +89,28 @@ class Controller extends BaseController
             }
         }
 
+        if (isset($request->captions)) {
+            foreach ($request->captions as $key => $caption) {
+                if (!is_null($caption[1]) && isset($caption[2]) && !is_null($caption[2])) {
+                    $picextension = $caption[2]->getClientOriginalExtension();
+                    $fileName = 'caption_' . $key . date("Y-m-d") . '_' . time() . '.' . $picextension;
+                    $session = session()->put('temp', $caption[2]->getPathName());
+                    $captionPath = "$destinationPath/$fileName";
+                    $post->captions()->create(['url' => $captionPath, 'lang' => $caption[1]]);
+                }
+            }
+        }
+
         if ($post->type == 'video') {
             if (isset($request->file)) {
                 foreach ($request->file as $key => $video) {
-
                     if (!is_null($video[1])) {
                         if (!File::exists($destinationPath)) {
                             File::makeDirectory($destinationPath, 0777, true);
                         }
-                        $picextension = $video[1]->getClientOriginalExtension();
-                        $fileName = 'video_' . date("Y-m-d") . '_' . time() . '.' . $picextension;
-                        $session = session()->put('temp', $video[1]->getPathName());
-                        $status =  $this->upload_with_ftp($fileName, "video");
-                        if (!$status) abort(404);
+                        $this->save_video($video[1], $post);
 
-                        $videoPath = "$destinationPath/$fileName";
-                        $post->files()->create(['url' => $videoPath, 'type' => 'video', 'quality_id' => $video[2]]);
-                    }
-                }
-            }
-            if (isset($request->captions)) {
-                foreach ($request->captions as $key => $caption) {
-                    if (!is_null($caption[1]) && isset($caption[2]) && !is_null($caption[2])) {
-
-                        $picextension = $caption[2]->getClientOriginalExtension();
-                        $fileName = 'caption_' . $key . date("Y-m-d") . '_' . time() . '.' . $picextension;
-                        $session = session()->put('temp', $caption[2]->getPathName());
-                        $captionPath = "$destinationPath/$fileName";
-                        $post->captions()->create(['url' => $captionPath, 'lang' => $caption[1]]);
+                        
                     }
                 }
             }
@@ -288,6 +305,21 @@ class Controller extends BaseController
         }
     }
 
+    public function get_user_from_token()
+    {
+
+        try {
+            $user =  JWTAuth::parseToken()->authenticate();
+            return $user;
+        } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+
+            return null;
+        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+
+            return null;
+        }
+    }
+
 
     public function SavePoster($file, $name, $destinationPath)
     {
@@ -376,15 +408,31 @@ class Controller extends BaseController
     public function send_mail($user)
     {
         $data = array('password' => $user->password);
-        Mail::send(['html' => 'mail'], $data, function ($message) use($user) {
+        Mail::send(['html' => 'mail'], $data, function ($message) use ($user) {
             $message->to($user->email, 'radio avin')->subject('Forget Password');
             $message->from('info@radioavin.com', 'RadioAvin');
         });
 
-        if(Mail::failures()) {
+        if (Mail::failures()) {
             return false;
         }
         return true;
+    }
 
+    public function zipArshive()
+    {
+
+        $pathdir = public_path("upload/files/original/3");
+        // dd(File::allFiles($pathdir));
+        //Enter the name to creating zipped directory
+        $zipcreated = "test.zip";
+        //Create new zip class
+        $newzip = new ZipArchive;
+        if ($newzip->open($zipcreated, ZipArchive::CREATE) === TRUE) {
+            foreach (File::allFiles($pathdir) as $key => $value) {
+                dd($value);
+            }
+            $newzip->close();
+        }
     }
 }

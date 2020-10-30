@@ -59,7 +59,7 @@ class MoviesController extends Controller
     public function Save(Request $request)
     {
 
-        // dd($request->all());
+        dd($request->file);
 
         $slug = Str::slug($request->name);
         $destinationPath = "files/movies/$slug";

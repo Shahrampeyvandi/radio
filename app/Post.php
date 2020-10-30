@@ -42,7 +42,7 @@ class Post extends Model
     }
     public function captions()
     {
-        return $this->hasmany(Caption::class);
+        return $this->morphMany(Caption::class, 'captionable');
     }
     public function files()
     {
@@ -82,15 +82,15 @@ class Post extends Model
 
     public function singers()
     {
-        $singers = $this->artists()->where('role', 'singer')->orderBy('fullname','asc')->take(2)->get();
+        $singers = $this->artists()->where('role', 'singer')->orderBy('fullname', 'asc')->take(2)->get();
         if (count($singers) > 1) {
-            $name =[];
+            $name = [];
             foreach ($singers as $key => $value) {
                 $name[] = $value->fullname;
             }
-          return  implode('-',$name);
-        }else{
-           return $singers->first()->fullname;
+            return  implode('-', $name);
+        } else {
+            return $singers->first()->fullname;
         }
     }
 
@@ -116,12 +116,21 @@ class Post extends Model
         }
         return '#';
     }
+    public function check_if_stream()
+    {
+        
+        if ($obj = $this->files->first()) {
+            return $obj->status == 2 ? true : false;
+        }
+        return false;
+    }
 
     public function image($size)
     {
         $data = @unserialize($this->poster);
-        if ($data == true && !is_null(unserialize($this->poster)["resize"])) {
-            
+        // dd($data);
+        if ($data == true && unserialize($this->poster)["resize"]) {
+
             $resize = unserialize($this->poster)["$size"];
             return asset($resize);
         } else {
@@ -151,7 +160,7 @@ class Post extends Model
     }
     public function getReleasedAttribute($value)
     {
-        if($value) {
+        if ($value) {
             return \Carbon\Carbon::parse($value)->format('Y/m/d');
         }
     }

@@ -34,6 +34,10 @@
     </main>
     <!-- end::main content -->
 
+    <script>
+    mainUrl = '{{route("MainUrl")}}'
+    </script>
+
     <!-- begin::global scripts -->
     <script src="{{asset('assets/vendors/bundle.js')}}"></script>
     <script src="{{asset('assets/vendors/charts/chart.min.js')}}"></script>

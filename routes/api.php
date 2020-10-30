@@ -3,13 +3,14 @@
 Route::post('register','Api\AuthController@register');
 Route::post('login','Api\AuthController@login');
 Route::post('forget-pass','Api\AuthController@forgetpass');
-
+Route::get('me','Api\AuthController@me');
 
 
 Route::get('get','Api\MainController@index');
 Route::get('songs/all','Api\MainController@all');
 
 Route::get('playlists/latest','Api\PlayListController@latest');
+Route::get('albums/latest','Api\AlbumController@latest');
 Route::get('playlists/{id}','Api\PlayListController@get');
 Route::get('featured','Api\MainController@featured');
 Route::get('newsongs','Api\MainController@newsongs');
@@ -48,19 +49,3 @@ Route::get('track/addplay','Api\MainController@AddPlay');
 
 
 
-
-
-// https://radioavin.com/api/artists/top ** method GET ** params => count:(number) default=20
-// https://radioavin.com/api/artist/see-all  ** method POST *** params =>   id:(artist_id) , type:(song | video) , q: (top | latest )  , count:(tedad)
-// https://radioavin.com/api/playlists/latest  ** method GET 
-// https://radioavin.com/api/songs/all  ** method GET ** params => page:(number) 
-// https://radioavin.com/api//artists/all * method get **
-// https://radioavin.com/api/featured  ** method GET ** params => count:(number) default=10 
-// https://radioavin.com/api/newsongs  ** method GET ** params => count:(number) default=10
-// https://radioavin.com/api/hot-tracks  ** method GET ** params => count:(number) default=10
-
-
-// https://radioavin.com/api/get-post/{post_id}   ****method GET 
-// https://radioavin.com/api/get-artist/{artist_id} **** method GET
-// https://radioavin.com/api/artist/see-all  ** method POST *** body =>   id:(artist_id) , type:(song | video) , q: (top | latest )  , count:(tedad)
-// https://radioavin.com/api/search ***** method GET *** params: ( key , q )  **   if (q == singer ) => return all singers     ** if (q == song ) => return all songs **     if( ! q ) => return songs and artists

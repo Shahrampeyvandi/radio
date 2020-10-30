@@ -7,8 +7,6 @@
 @include('Includes.Panel.moviesmenu')
 
 
-
-
 <div class="card">
     <div class="card-body">
         <div class="card-title">
@@ -19,8 +17,8 @@
         <table id="example1" class="table table-striped table-bordered w-100">
             <thead>
                 <tr>
-                    
-                  <th></th>
+
+                    <th></th>
                     <th>Title</th>
                     <th>Singer</th>
                     <th>Writer</th>
@@ -35,7 +33,7 @@
 
             <tbody>
                 @foreach($videos as $key=>$post)
-                
+
                 <tr>
                     <td>{{$key+1}}</td>
                     <td>
@@ -52,16 +50,23 @@
                         @endforeach
                     </td>
                     <td class="text-success">{{$post->duration}}</td>
-                    <td class="text-success">{{count($post->categories) ? $post->categories->first()->name : '--' }}</td>
-                    <td>
-                         <img src="{{$post->image('resize')}}" style="width: 70px" />
+                    <td class="text-success">{{count($post->categories) ? $post->categories->first()->name : '--' }}
                     </td>
                     <td>
-                        <a href="{{route('Panel.EditVideo',$post)}}" class="btn btn-sm btn-info"><i class="fa fa-edit"></i></a>
+                        <img src="{{$post->image('resize')}}" style="width: 70px" />
+                    </td>
+                    <td>
+                        <a href="{{route('Panel.EditVideo',$post)}}" class="btn btn-sm btn-info"><i
+                                class="fa fa-edit"></i></a>
                         <a href="#" data-id="{{$post->id}}" title="حذف " data-toggle="modal" data-target="#deletePost"
                             class="btn btn-sm btn-danger   m-2">
                             <i class="fa fa-trash"></i>
                         </a>
+                        @if (!$post->check_if_stream())
+                            
+                        <a href="{{route('Panel.Stream',$post->id)}}" class="btn btn-sm btn-primary">Run Streaming</a>
+                        @endif
+
                     </td>
                     @endforeach
             </tbody>
@@ -80,9 +85,7 @@
 
 @section('js')
 <script>
- 
-    
-         $('#deletePost').on('shown.bs.modal', function (event) {
+    $('#deletePost').on('shown.bs.modal', function (event) {
             var button = $(event.relatedTarget)
             var recipient = button.data('id')
             $('#post_id').val(recipient)
